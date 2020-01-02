@@ -1,0 +1,46 @@
+package android.hardware.camera2.marshal.impl;
+
+import android.hardware.camera2.marshal.MarshalQueryable;
+import android.hardware.camera2.marshal.Marshaler;
+import android.hardware.camera2.params.RecommendedStreamConfiguration;
+import android.hardware.camera2.utils.TypeReference;
+import java.nio.ByteBuffer;
+
+public class MarshalQueryableRecommendedStreamConfiguration implements MarshalQueryable<RecommendedStreamConfiguration> {
+    private static final int SIZE = 20;
+
+    private class MarshalerRecommendedStreamConfiguration extends Marshaler<RecommendedStreamConfiguration> {
+        protected MarshalerRecommendedStreamConfiguration(TypeReference<RecommendedStreamConfiguration> typeReference, int nativeType) {
+            super(MarshalQueryableRecommendedStreamConfiguration.this, typeReference, nativeType);
+        }
+
+        public void marshal(RecommendedStreamConfiguration value, ByteBuffer buffer) {
+            buffer.putInt(value.getWidth());
+            buffer.putInt(value.getHeight());
+            buffer.putInt(value.getFormat());
+            buffer.putInt(value.isInput());
+            buffer.putInt(value.getUsecaseBitmap());
+        }
+
+        public RecommendedStreamConfiguration unmarshal(ByteBuffer buffer) {
+            int width = buffer.getInt();
+            int height = buffer.getInt();
+            return new RecommendedStreamConfiguration(buffer.getInt(), width, height, buffer.getInt() != 0, buffer.getInt());
+        }
+
+        public int getNativeSize() {
+            return 20;
+        }
+    }
+
+    public Marshaler<RecommendedStreamConfiguration> createMarshaler(TypeReference<RecommendedStreamConfiguration> managedType, int nativeType) {
+        return new MarshalerRecommendedStreamConfiguration(managedType, nativeType);
+    }
+
+    public boolean isTypeMappingSupported(TypeReference<RecommendedStreamConfiguration> managedType, int nativeType) {
+        if (nativeType == 1 && managedType.getType().equals(RecommendedStreamConfiguration.class)) {
+            return true;
+        }
+        return false;
+    }
+}
